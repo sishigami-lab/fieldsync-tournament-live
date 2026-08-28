@@ -1,5 +1,5 @@
 "use client";
-import {useEffect,useState} from "react";
+import {useEffect,useState,type SetStateAction} from "react";
 import {CalendarDays,Check,Clock3,Copy,Download,FileText,Flag,LockKeyhole,LogOut,MapPin,Minus,Play,Plus,PlusCircle,Printer,Send,Settings,ShieldCheck,Square,Trophy,X} from "lucide-react";
 
 type Tab="bracket"|"schedule"|"guide"|"score"|"settings";
@@ -24,9 +24,10 @@ function Team({name}:{name:string|null}){return <span className={!name?"team mut
 function Card({g}:{g:Game}){return <div className={g.done?"game done":"game"}><small>{g.no}{g.done&&<em><Check/>終了</em>}</small><p><Team name={g.a}/><b>{g.done?g.sa:"–"}</b></p><p><Team name={g.b}/><b>{g.done?g.sb:"–"}</b></p>{g.pa!==undefined&&<footer>PK {g.pa} - {g.pb}</footer>}</div>}
 
 export default function Home(){
- const [tab,setTab]=useState<Tab>("bracket"),[admin,setAdmin]=useState(false),[login,setLogin]=useState(false),[pin,setPin]=useState(""),[games,setGames]=useState(seed),[id,setId]=useState("m3"),[stage,setStage]=useState<"main"|"challenge">("main"),[court,setCourt]=useState("すべて"),[mins,setMins]=useState(15),[format,setFormat]=useState("half"),[pkRule,setPkRule]=useState(3),[pk,setPk]=useState(false),[secs,setSecs]=useState(900),[running,setRunning]=useState(false),[phase,setPhase]=useState("試合前"),[confirm,setConfirm]=useState(false),[toast,setToast]=useState(false),[info,setInfo]=useState(initialInfo),[editing,setEditing]=useState(false),[copied,setCopied]=useState(false),[published,setPublished]=useState(false),[publishConfirm,setPublishConfirm]=useState(false);
+ const [tab,setTab]=useState<Tab>("bracket"),[admin,setAdmin]=useState(false),[login,setLogin]=useState(false),[pin,setPin]=useState(""),[games,setGames]=useState(seed),[id,setId]=useState("m3"),[stage,setStage]=useState<"main"|"challenge">("main"),[court,setCourt]=useState("すべて"),[mins,setMins]=useState(15),[format,setFormat]=useState("half"),[pkRule,setPkRule]=useState(3),[pk,setPk]=useState(false),[secs,setSecsRaw]=useState(0),[running,setRunning]=useState(false),[phase,setPhase]=useState("試合前"),[confirm,setConfirm]=useState(false),[toast,setToast]=useState(false),[info,setInfo]=useState(initialInfo),[editing,setEditing]=useState(false),[copied,setCopied]=useState(false),[published,setPublished]=useState(false),[publishConfirm,setPublishConfirm]=useState(false);
+ const setSecs=(value:SetStateAction<number>)=>setSecsRaw(typeof value==="number"?0:value);
  const g=games.find(x=>x.id===id)!; const edit=(p:Partial<Game>)=>setGames(xs=>xs.map(x=>x.id===id?{...x,...p}:x)); const add=(k:keyof Game,n:number)=>edit({[k]:Math.max(0,Number(g[k]||0)+n)} as Partial<Game>);
- useEffect(()=>{if(!running)return;let t=setInterval(()=>setSecs(s=>Math.max(0,s-1)),1000);return()=>clearInterval(t)},[running]); useEffect(()=>setSecs(mins*60),[mins]);
+ useEffect(()=>{if(!running)return;let t=setInterval(()=>setSecsRaw(s=>s+1),1000);return()=>clearInterval(t)},[running]); useEffect(()=>setSecsRaw(0),[mins]); useEffect(()=>{if(phase==="後半")setSecsRaw(0)},[phase]);
  const win=(x:Game)=>x.sa!==x.sb?(x.sa>x.sb?x.a:x.b):(x.pa||0)!==(x.pb||0)?((x.pa||0)>(x.pb||0)?x.a:x.b):null; const lose=(x:Game)=>win(x)===x.a?x.b:win(x)===x.b?x.a:null;
  const nav=(t:Tab)=>{if((t==="score"||t==="settings")&&!admin)setLogin(true);else setTab(t)};
  const unlock=(v:string)=>{setPin(v);if(v==="1234"){setTimeout(()=>{setAdmin(true);setLogin(false);setPin("");setTab("score")},160)}};

@@ -1,3 +1,4 @@
 .guideTitle .editInfo{display:none!important}
 .tournamentManager>div:last-child>button:first-child{display:none}.lockedEditor{margin-bottom:20px}
 body:has(.lockedEditor) .tournamentManager,body:has(.lockedEditor) .subheading,body:has(.lockedEditor) .settings,body:has(.lockedEditor) .saved{display:none}
+.timer>p{font-size:0!important}.timer>p:after{content:"ストップウォッチ · 経過時間";font-size:8px}
