@@ -1,0 +1,1 @@
+CREATE INDEX `idx_tournaments_updated_at` ON `tournaments` (`updated_at`);

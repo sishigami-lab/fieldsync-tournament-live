@@ -1,5 +1,20 @@
 {
   "version": "7",
   "dialect": "sqlite",
-  "entries": []
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1788831254664,
+      "tag": "0000_easy_zemo",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1788831265041,
+      "tag": "0001_first_cargill",
+      "breakpoints": true
+    }
+  ]
 }
