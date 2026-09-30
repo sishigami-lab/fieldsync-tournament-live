@@ -1,0 +1,4 @@
+import {verifyPin} from "../../../lib/password";
+import {supabaseRequest} from "../../../lib/supabase-server";
+type Settings={admin_password_salt:string;admin_password_hash:string;referee_password_salt:string;referee_password_hash:string};
+export async function POST(request:Request){try{const {pin}=await request.json() as {pin?:string};if(!/^\d{4}$/.test(pin||""))return Response.json({error:"4桁の番号を入力してください"},{status:400});const [row]=await supabaseRequest("football_system_settings?id=eq.default&select=*") as Settings[];if(await verifyPin(pin!,row.admin_password_salt,row.admin_password_hash))return Response.json({role:"admin"});if(await verifyPin(pin!,row.referee_password_salt,row.referee_password_hash))return Response.json({role:"referee"});return Response.json({error:"パスコードが違います"},{status:401})}catch(error){console.error(error);return Response.json({error:"ログインを確認できませんでした"},{status:500})}}
