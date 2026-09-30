@@ -1,9 +1,15 @@
-import {desc,eq} from "drizzle-orm";
-import {getDb} from "../../../db";
-import {tournaments} from "../../../db/schema";
+type TournamentRow={id:string;name:string;status:string;data:unknown;created_at:string;updated_at:string};
 
-const parse=(row:typeof tournaments.$inferSelect)=>({...row,data:JSON.parse(row.data)});
-export async function GET(){const rows=await getDb().select().from(tournaments).orderBy(desc(tournaments.updatedAt));return Response.json({tournaments:rows.map(parse)})}
-export async function POST(request:Request){const body=await request.json() as {name?:string;status?:string;data?:unknown},id=crypto.randomUUID(),now=new Date().toISOString();if(!body.name)return Response.json({error:"大会名が必要です"},{status:400});const [row]=await getDb().insert(tournaments).values({id,name:body.name,status:body.status||"draft",data:JSON.stringify(body.data||{}),createdAt:now,updatedAt:now}).returning();return Response.json({tournament:parse(row)},{status:201})}
-export async function PUT(request:Request){const body=await request.json() as {id?:string;name?:string;status?:string;data?:unknown};if(!body.id||!body.name)return Response.json({error:"保存情報が不足しています"},{status:400});const [row]=await getDb().update(tournaments).set({name:body.name,status:body.status||"draft",data:JSON.stringify(body.data||{}),updatedAt:new Date().toISOString()}).where(eq(tournaments.id,body.id)).returning();return Response.json({tournament:parse(row)})}
-export async function DELETE(request:Request){const id=new URL(request.url).searchParams.get("id");if(!id)return Response.json({error:"IDが必要です"},{status:400});await getDb().delete(tournaments).where(eq(tournaments.id,id));return Response.json({ok:true})}
+const config=()=>{
+ const url=process.env.SUPABASE_URL,key=process.env.SUPABASE_SECRET_KEY;
+ if(!url||!key)throw new Error("SUPABASE_URL と SUPABASE_SECRET_KEY を設定してください");
+ return{url,key};
+};
+const supabase=async(path:string,init:RequestInit={})=>{const {url,key}=config(),response=await fetch(`${url}/rest/v1/${path}`,{...init,headers:{apikey:key,Authorization:`Bearer ${key}`,"Content-Type":"application/json",Prefer:"return=representation",...(init.headers||{})}});if(!response.ok)throw new Error(`Supabase error ${response.status}: ${await response.text()}`);return response.status===204?null:response.json()};
+const present=(row:TournamentRow)=>({id:row.id,name:row.name,status:row.status,data:row.data,createdAt:row.created_at,updatedAt:row.updated_at});
+const fail=(error:unknown)=>{console.error(error);return Response.json({error:"大会データを保存できませんでした"},{status:500})};
+
+export async function GET(){try{const rows=await supabase("football_tournaments?select=*&order=updated_at.desc") as TournamentRow[];return Response.json({tournaments:rows.map(present)})}catch(error){return fail(error)}}
+export async function POST(request:Request){try{const body=await request.json() as {name?:string;status?:string;data?:unknown};if(!body.name)return Response.json({error:"大会名が必要です"},{status:400});const [row]=await supabase("football_tournaments",{method:"POST",body:JSON.stringify({name:body.name,status:body.status||"draft",data:body.data||{}})}) as TournamentRow[];return Response.json({tournament:present(row)},{status:201})}catch(error){return fail(error)}}
+export async function PUT(request:Request){try{const body=await request.json() as {id?:string;name?:string;status?:string;data?:unknown};if(!body.id||!body.name)return Response.json({error:"保存情報が不足しています"},{status:400});const [row]=await supabase(`football_tournaments?id=eq.${encodeURIComponent(body.id)}`,{method:"PATCH",body:JSON.stringify({name:body.name,status:body.status||"draft",data:body.data||{},updated_at:new Date().toISOString()})}) as TournamentRow[];if(!row)return Response.json({error:"大会が見つかりません"},{status:404});return Response.json({tournament:present(row)})}catch(error){return fail(error)}}
+export async function DELETE(request:Request){try{const id=new URL(request.url).searchParams.get("id");if(!id)return Response.json({error:"IDが必要です"},{status:400});await supabase(`football_tournaments?id=eq.${encodeURIComponent(id)}`,{method:"DELETE",headers:{Prefer:"return=minimal"}});return Response.json({ok:true})}catch(error){return fail(error)}}
