@@ -1,11 +1,11 @@
 # Supabase接続設定
 
-大会データは Supabase プロジェクト `bond sift` の `public.football_tournaments` に保存します。
+大会データは Supabase プロジェクト `FieldSync Tournament Live` の `public.football_tournaments` に保存します。
 
 本番環境には次の環境変数を設定してください。
 
 ```text
-SUPABASE_URL=https://xvycsjiqtwthdihithnq.supabase.co
+SUPABASE_URL=https://mjnkbywyjalfsoilttvd.supabase.co
 SUPABASE_SECRET_KEY=SupabaseのSecret key
 ```
 
