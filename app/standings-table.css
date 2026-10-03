@@ -1,0 +1,26 @@
+/* Use one shared column definition for the standings header and every data row. */
+.leagueTable {
+  --standings-columns: 58px minmax(190px, 1fr) repeat(4, 58px) 64px 64px;
+}
+
+.leagueTable > header,
+.leagueTable > div {
+  width: 100%;
+  grid-template-columns: var(--standings-columns);
+  justify-items: center;
+}
+
+/* Reset the global page-header positioning inside the standings table. */
+.leagueTable > header {
+  position: static;
+  top: auto;
+  z-index: auto;
+  height: auto;
+}
+
+.leagueTable > header > :nth-child(2),
+.leagueTable > div > :nth-child(2) {
+  width: 100%;
+  min-width: 0;
+  text-align: left;
+}

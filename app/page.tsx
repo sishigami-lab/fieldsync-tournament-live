@@ -1,6 +1,7 @@
 "use client";
 import "./pk-shootout.css";
 import "./draw-builder.css";
+import "./standings-table.css";
 import "./tournament-database.css";
 import "./operations.css";
 import {useEffect,useState,type Dispatch,type SetStateAction} from "react";
