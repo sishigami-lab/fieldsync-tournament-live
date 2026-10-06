@@ -1,26 +1,106 @@
-/* Use one shared column definition for the standings header and every data row. */
 .leagueTable {
-  --standings-columns: 58px minmax(190px, 1fr) repeat(4, 58px) 64px 64px;
+  overflow-x: auto;
 }
 
-.leagueTable > header,
-.leagueTable > div {
+.leagueTable table {
   width: 100%;
-  grid-template-columns: var(--standings-columns);
-  justify-items: center;
+  min-width: 680px;
+  border-collapse: collapse;
+  table-layout: fixed;
+  text-align: center;
 }
 
-/* Reset the global page-header positioning inside the standings table. */
-.leagueTable > header {
-  position: static;
-  top: auto;
-  z-index: auto;
-  height: auto;
+.leagueTable th,
+.leagueTable td {
+  height: 48px;
+  padding: 0 8px;
+  border-bottom: 1px solid #edf1ee;
+  vertical-align: middle;
 }
 
-.leagueTable > header > :nth-child(2),
-.leagueTable > div > :nth-child(2) {
-  width: 100%;
+.leagueTable th {
+  height: 38px;
+  background: #f4f7f5;
+  color: #77827c;
+  font-size: 8px;
+  font-weight: 700;
+}
+
+.leagueTable th:nth-child(1),
+.leagueTable td:nth-child(1) {
+  width: 76px;
+}
+
+.leagueTable th:nth-child(2),
+.leagueTable td:nth-child(2) {
+  width: auto;
+  text-align: left;
+}
+
+.leagueTable th:nth-child(n + 3):nth-child(-n + 6),
+.leagueTable td:nth-child(n + 3):nth-child(-n + 6) {
+  width: 58px;
+}
+
+.leagueTable th:nth-child(7),
+.leagueTable td:nth-child(7),
+.leagueTable th:nth-child(8),
+.leagueTable td:nth-child(8) {
+  width: 64px;
+}
+
+.leagueTable td {
+  font-size: 10px;
+}
+
+.leagueTable td:first-child strong {
+  display: grid;
+  place-items: center;
+  width: 29px;
+  height: 29px;
+  margin: auto;
+  border-radius: 50%;
+  background: #e7eeea;
+  font-size: 10px;
+}
+
+.leagueTable tbody tr:nth-child(1) td:first-child strong {
+  background: #d9ac36;
+  color: #fff;
+}
+
+.leagueTable tbody tr:nth-child(2) td:first-child strong {
+  background: #9aa8a1;
+  color: #fff;
+}
+
+.leagueTable tbody tr:nth-child(3) td:first-child strong {
+  background: #b97b4d;
+  color: #fff;
+}
+
+.leagueTable td:nth-child(2) .team {
   min-width: 0;
   text-align: left;
+}
+
+.leagueTable td:last-child b {
+  color: var(--g);
+  font-size: 16px;
+}
+
+@media (max-width: 700px) {
+  .leagueTable table {
+    min-width: 620px;
+  }
+
+  .leagueTable th:nth-child(1),
+  .leagueTable td:nth-child(1) {
+    width: 62px;
+  }
+
+  .leagueTable th:nth-child(n + 3),
+  .leagueTable td:nth-child(n + 3) {
+    width: 52px;
+  }
 }
