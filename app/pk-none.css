@@ -1,0 +1,23 @@
+.pkChoices {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.pkChoices button:first-child b {
+  font-size: 14px;
+}
+
+.pkToggle.disabled {
+  background: #f2f4f3;
+  color: #7b8781;
+}
+
+.pkToggle > button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+@media (max-width: 480px) {
+  .pkChoices {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
