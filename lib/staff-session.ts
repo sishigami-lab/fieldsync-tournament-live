@@ -1,8 +1,15 @@
+import {env} from "cloudflare:workers";
+
 export type StaffRole="admin"|"referee";
 
 const cookieName="fieldsync_staff";
 const encoder=new TextEncoder();
-const secret=()=>process.env.STAFF_SESSION_SECRET||process.env.SUPABASE_SECRET_KEY||"";
+const secret=()=>{
+ const runtime=env as unknown as {STAFF_SESSION_SECRET?:string;SUPABASE_SECRET_KEY?:string};
+ const value=runtime.STAFF_SESSION_SECRET||runtime.SUPABASE_SECRET_KEY||process.env.STAFF_SESSION_SECRET||process.env.SUPABASE_SECRET_KEY;
+ if(!value)throw new Error("Staff session secret is unavailable");
+ return value;
+};
 const base64Url=(bytes:Uint8Array)=>btoa(String.fromCharCode(...bytes)).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/g,"");
 const sign=async(value:string)=>{const key=await crypto.subtle.importKey("raw",encoder.encode(secret()),{name:"HMAC",hash:"SHA-256"},false,["sign"]);return base64Url(new Uint8Array(await crypto.subtle.sign("HMAC",key,encoder.encode(value))))};
 
